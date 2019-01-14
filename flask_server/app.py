@@ -33,11 +33,6 @@ def hello_world():
 @app.route('/create_account', methods=['POST'])
 def create_account():
     if request.method == 'POST':
-        print(list(request.form))
-        print("username = ", request.form['username'])
-        print("password = ", request.form['password'])
-        print("age = ", request.form['age'])
-
         username = request.form.get("username", "")
         password = request.form.get("password", "")
         gender = request.form.get("gender", "")
