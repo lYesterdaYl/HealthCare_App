@@ -28,7 +28,7 @@ class Data(Base):
 
 
     user = relationship(User)
-    user_id = Column(Integer, ForeignKey(user.id))
+    user_id = Column(Integer, ForeignKey('user.id'))
 
 DIALCT = "mysql"
 DRIVER = "pymysql"
