@@ -18,6 +18,7 @@ class User(Base):
     country = Column(String(50))
     state = Column(String(50))
     city = Column(String(50))
+    session = Column(String(15))
     insert_time = Column(TIMESTAMP(True), nullable=False)
 
 
