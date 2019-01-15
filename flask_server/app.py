@@ -77,18 +77,28 @@ def user_login():
         if hash.hexdigest() == user.password:
             now = int(time.time())
             session_code = str(now) + str(random.randint(10000, 99999))
-
             user.session = session_code
             session.add(user)
             session.commit()
-            print(len(session_code))
+
+            data = {}
+            data['id'] = user.id
+            data['username'] = user.username
+            data['gender'] = user.gender
+            data['age'] = user.age
+            data['telephone'] = user.telephone
+            data['country'] = user.country
+            data['state'] = user.state
+            data['city'] = user.city
+            data['country'] = user.country
+            data['session'] = user.session
 
             response['msg'] = "auth successful"
+            response['data'] = data
             response['code'] = "200"
-            response['session'] = session_code
             return make_response(json.dumps(response), 200)
         else:
-            response['msg'] = "wrong username or password"
+            response['msg'] = "Wrong username or password"
             response['code'] = "200"
             return make_response(json.dumps(response), 200)
     else:
