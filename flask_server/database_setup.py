@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP, BIGINT
+from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP, BIGINT, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -14,6 +14,7 @@ class User(Base):
     password = Column(String(32), nullable=False)
     gender = Column(Integer)
     age = Column(Integer)
+    weight = Column(Float)
     telephone = Column(String(20))
     country = Column(String(50))
     state = Column(String(50))
@@ -22,11 +23,11 @@ class User(Base):
     insert_time = Column(TIMESTAMP(True), nullable=False)
 
 
-class Data(Base):
+class Walk_Data(Base):
     __tablename__ = 'user_data'
 
     id = Column(BIGINT, primary_key=True)
-
+    walk = Column(Integer)
 
     user = relationship(User)
     user_id = Column(Integer, ForeignKey('user.id'))

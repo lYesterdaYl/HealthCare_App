@@ -21,7 +21,6 @@ DATABASE = "healthcare_app"
 DB_URI = "{}+{}://{}:{}@{}:{}/{}?charset=utf8"\
     .format(DIALCT, DRIVER, USERNAME, PASSWORD, HOST, PORT, DATABASE)
 engine = create_engine(DB_URI)
-# engine = create_engine('sqlite:///restaurantmenu.db?check_same_thread=False')
 
 Base.metadata.bind = engine
 
@@ -34,6 +33,11 @@ def hello_world():
 
 @app.route('/create_account', methods=['POST'])
 def create_account():
+    """
+
+    :return:
+    """
+    response = {}
     if request.method == 'POST':
         username = request.form.get("username", "")
         password = request.form.get("password", "")
@@ -45,7 +49,9 @@ def create_account():
         city = request.form.get("city", "")
 
         if username == "" or password == "":
-            return make_response("Username or Password is empty", 200)
+            response['msg'] = "Username or Password is empty"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
 
         # md5 encryption
         encryption = hashlib.md5()
@@ -57,15 +63,26 @@ def create_account():
             new_user = User(username=username, password=password, gender=gender, age=age, telephone=telephone, country=country, state=state, city=city)
             session.add(new_user)
             session.commit()
-            return  make_response('User Created', 200)
+            response['msg'] = "User Created"
+            response['code'] = "200"
+            return  make_response(json.dumps(response), 200)
         else:
-            return make_response('User Already Exist', 200)
+            response['msg'] = "User Already Exist"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
 
     else:
-        return make_response('Method Not Allowed', 405)
+        response['msg'] = "Method Not Allowed"
+        response['code'] = "200"
+        return make_response(json.dumps(response), 405)
 
 @app.route('/login', methods=['POST'])
 def user_login():
+    """
+    App login function
+    :return: {"msg": "auth successful", "data": "", "code": "200"}
+    """
+
     response = {}
     if request.method == 'POST':
         username = request.form['username']
@@ -106,16 +123,25 @@ def user_login():
         response['code'] = "405"
         return make_response(json.dumps(response), 405)
 
-# @app.route('/<int:user_id>/data/JSON')
-# def get_user_data(user_id):
-#     test = {}
-#     test['account'] = 'fdafa'
-#     test['password'] = 'afdfafw'
-#     print(user_id)
-#     return make_response(json.dumps(test), 200)
+@app.route('/<int:user_id>/data/JSON')
+def get_user_data(user_id):
+    response = {}
+    if request.method == 'POST':
+        user = session.query(User).filter_by(id=user_id).first()
+        if user.session == request.form['session']:
+            pass
+        else:
+            response['msg'] = "Please Login or Re-Login"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
+    else:
+        response['msg'] = "Method Not Allowed"
+        response['code'] = "405"
+        return make_response(json.dumps(response), 405)
 
 
 
 if __name__ == '__main__':
     app.secret_key = "secret_key"
-    app.run(debug=True, port=5000)
+    app.debug = True
+    app.run(port=5000)
