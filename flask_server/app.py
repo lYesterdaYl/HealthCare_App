@@ -41,7 +41,7 @@ def create_account():
     if request.method == 'POST':
         username = request.form.get("username", "")
         password = request.form.get("password", "")
-        gender = request.form.get("gender", "")
+        gender = request.form.get("gender", "0")
         age = request.form.get("age", "")
         telephone = request.form.get("telephone", "")
         country = request.form.get("country", "")
@@ -123,13 +123,21 @@ def user_login():
         response['code'] = "405"
         return make_response(json.dumps(response), 405)
 
-@app.route('/<int:user_id>/data/JSON')
+@app.route('/<int:user_id>/data/JSON', methods=['POST'])
 def get_user_data(user_id):
     response = {}
     if request.method == 'POST':
         user = session.query(User).filter_by(id=user_id).first()
         if user.session == request.form['session']:
-            pass
+            if 'data_type' in request.form:
+                if request.form['data_type'] == 'walk':
+                    pass
+                elif request.form['data_type'] == 'calorie':
+                    pass
+            else:
+                response['msg'] = "Request Data Type is Empty"
+                response['code'] = "200"
+                return make_response(json.dumps(response), 200)
         else:
             response['msg'] = "Please Login or Re-Login"
             response['code'] = "200"

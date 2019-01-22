@@ -12,9 +12,10 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(20), nullable=False)
     password = Column(String(32), nullable=False)
-    gender = Column(Integer)
+    gender = Column(Integer, nullable=True)
     age = Column(Integer)
     weight = Column(Float)
+    target_weight = Column(Float)
     telephone = Column(String(20))
     country = Column(String(50))
     state = Column(String(50))
@@ -24,10 +25,19 @@ class User(Base):
 
 
 class Walk_Data(Base):
-    __tablename__ = 'user_data'
+    __tablename__ = 'user_walk_data'
 
     id = Column(BIGINT, primary_key=True)
     walk = Column(Integer)
+
+    user = relationship(User)
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+class Calories_Data(Base):
+    __tablename__ = 'user_calorie_data'
+
+    id = Column(BIGINT, primary_key=True)
+    calorie = Column(Integer)
 
     user = relationship(User)
     user_id = Column(Integer, ForeignKey('user.id'))
