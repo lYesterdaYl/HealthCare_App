@@ -1,10 +1,9 @@
 from flask import Flask, request, jsonify, make_response, render_template
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User
+from database_setup import Base, User, Walk_Data, Calories_Data
 
 import json
-import requests
 import hashlib
 import time, random
 
@@ -130,10 +129,26 @@ def get_user_data(user_id):
         user = session.query(User).filter_by(id=user_id).first()
         if user.session == request.form['session']:
             if 'data_type' in request.form:
-                if request.form['data_type'] == 'walk':
-                    pass
-                elif request.form['data_type'] == 'calorie':
-                    pass
+                if 'start_date' in request.form and 'end_date' in request.form:
+                    start_date, end_date = request.form['start_date'], request.form['end_date']
+                    if request.form['data_type'] == 'walk':
+                        data = session.query(Walk_Data).filter_by(user_id=user_id).filter(Walk_Data.date>=start_date, Walk_Data.date<=end_date)
+                    elif request.form['data_type'] == 'calorie':
+                        data = session.query(Calories_Data).filter_by(user_id=user_id).filter(Calories_Data.date>=start_date, Calories_Data.date<=end_date)
+                    else:
+                        data = {}
+                        response['msg'] = "No Data on such Dates"
+                        response['data'] = data
+                        response['code'] = "200"
+                        return make_response(json.dumps(response), 200)
+                    response['msg'] = "Data Retrive Successful"
+                    response['data'] = data
+                    response['code'] = "200"
+                    return make_response(json.dumps(response), 200)
+                else:
+                    response['msg'] = "Start Date or End Date is Empty"
+                    response['code'] = "200"
+                    return make_response(json.dumps(response), 200)
             else:
                 response['msg'] = "Request Data Type is Empty"
                 response['code'] = "200"

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP, BIGINT, Float
+from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP, BIGINT, Float, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
@@ -29,6 +29,7 @@ class Walk_Data(Base):
 
     id = Column(BIGINT, primary_key=True)
     walk = Column(Integer)
+    date = Column(Date)
 
     user = relationship(User)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -38,6 +39,7 @@ class Calories_Data(Base):
 
     id = Column(BIGINT, primary_key=True)
     calorie = Column(Integer)
+    date = Column(Date)
 
     user = relationship(User)
     user_id = Column(Integer, ForeignKey('user.id'))
