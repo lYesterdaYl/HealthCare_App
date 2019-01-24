@@ -109,7 +109,7 @@ def user_login():
             data['country'] = user.country
             data['session'] = user.session
 
-            response['msg'] = "auth successful"
+            response['msg'] = "Auth successful"
             response['data'] = data
             response['code'] = "200"
             return make_response(json.dumps(response), 200)
@@ -162,7 +162,33 @@ def get_user_data(user_id):
         response['code'] = "405"
         return make_response(json.dumps(response), 405)
 
+@app.route('/<int:user_id>/data/update', methods=['POST'])
+def update_user_information(user_id):
+    response = {}
+    if request.method == 'POST':
+        user = session.query(User).filter_by(id=user_id).first()
+        if user.session == request.form['session']:
+            user.gender = request.form.get("gender", user.gender)
+            user.age = request.form.get("age", user.age)
+            user.telephone = request.form.get("telephone", user.telephone)
+            user.country = request.form.get("country", user.country)
+            user.state = request.form.get("state", user.state)
+            user.city = request.form.get("city", user.city)
 
+            session.add(user)
+            session.commit()
+
+            response['msg'] = "User Information Edit Successful"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
+        else:
+            response['msg'] = "Please Login or Re-Login"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
+    else:
+        response['msg'] = "Method Not Allowed"
+        response['code'] = "405"
+        return make_response(json.dumps(response), 405)
 
 if __name__ == '__main__':
     app.secret_key = "secret_key"
