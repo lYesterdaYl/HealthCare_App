@@ -44,6 +44,21 @@ class Calories_Data(Base):
     user = relationship(User)
     user_id = Column(Integer, ForeignKey('user.id'))
 
+class Survey_Data(Base):
+    __tablename__ = 'user_survey_data'
+
+    id = Column(BIGINT, primary_key=True)
+    Q1 = Column(Integer)
+    date = Column(Date)
+
+    user = relationship(User)
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+
+
+
+
+
 DIALCT = "mysql"
 DRIVER = "pymysql"
 USERNAME = "root"

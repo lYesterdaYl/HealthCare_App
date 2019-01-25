@@ -26,11 +26,13 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
 @app.route('/')
 def hello_world():
     return 'Hello World!'
 
-@app.route('/create_account', methods=['POST'])
+
+@app.route('/user/create_account', methods=['POST'])
 def create_account():
     """
 
@@ -75,7 +77,8 @@ def create_account():
         response['code'] = "200"
         return make_response(json.dumps(response), 405)
 
-@app.route('/login', methods=['POST'])
+
+@app.route('/user/login', methods=['POST'])
 def user_login():
     """
     App login function
@@ -122,7 +125,8 @@ def user_login():
         response['code'] = "405"
         return make_response(json.dumps(response), 405)
 
-@app.route('/<int:user_id>/data/JSON', methods=['POST'])
+
+@app.route('/data/<int:user_id>/JSON', methods=['POST'])
 def get_user_data(user_id):
     response = {}
     if request.method == 'POST':
@@ -162,7 +166,8 @@ def get_user_data(user_id):
         response['code'] = "405"
         return make_response(json.dumps(response), 405)
 
-@app.route('/<int:user_id>/data/update', methods=['POST'])
+
+@app.route('/user/<int:user_id>/update', methods=['POST'])
 def update_user_information(user_id):
     response = {}
     if request.method == 'POST':
@@ -189,6 +194,24 @@ def update_user_information(user_id):
         response['msg'] = "Method Not Allowed"
         response['code'] = "405"
         return make_response(json.dumps(response), 405)
+
+
+@app.route('/data/<int:user_id>/insert', methods=['POST'])
+def insert_user_data(user_id):
+    response = {}
+    if request.method == 'POST':
+        user = session.query(User).filter_by(id=user_id).first()
+        if user.session == request.form['session']:
+            pass
+        else:
+            response['msg'] = "Please Login or Re-Login"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
+    else:
+        response['msg'] = "Method Not Allowed"
+        response['code'] = "405"
+        return make_response(json.dumps(response), 405)
+
 
 if __name__ == '__main__':
     app.secret_key = "secret_key"
