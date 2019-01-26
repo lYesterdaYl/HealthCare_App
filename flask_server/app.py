@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, make_response, render_template
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User, Walk_Data, Calories_Data
+from database_setup import Base, User, Walk_Data, Calories_Data, Survey_Data
 
 import json
 import hashlib
@@ -202,7 +202,25 @@ def insert_user_data(user_id):
     if request.method == 'POST':
         user = session.query(User).filter_by(id=user_id).first()
         if user.session == request.form['session']:
-            pass
+            if 'data_type' in request.form:
+                data = json.loads(request.form['data'])
+                if request.form['data_type'] == 'walk':
+                    new_data = Walk_Data(walk=data['walk'], date=data['date'], user_id=user_id)
+                elif request.form['data_type'] == 'calorie':
+                    new_data = Calories_Data(calorie=data['walk'], date=data['date'], user_id=user_id)
+                elif request.form['data_type'] == 'survey':
+                    score = data['Q1'] + data['Q2'] + data['Q3'] + data['Q4'] + data['Q5'] + data['Q6'] + data['Q7'] + data['Q8'] + data['Q9'] + data['Q10']
+                    new_data =  Survey_Data(Q1=data['Q1'], Q2=data['Q2'], Q3=data['Q3'], Q4=data['Q4'], Q5=data['Q5'], Q6=data['Q6'], Q7=data['Q7'], Q8=data['Q8'], Q9=data['Q9'], Q10=data['Q10'], score=score, date=data['date'])
+                else:
+                    response['msg'] = "Please Invalid Data Type"
+                    response['code'] = "200"
+                    return make_response(json.dumps(response), 200)
+                session.add(new_data)
+                session.commit()
+            else:
+                response['msg'] = "Please Specify Data Type"
+                response['code'] = "200"
+                return make_response(json.dumps(response), 200)
         else:
             response['msg'] = "Please Login or Re-Login"
             response['code'] = "200"
