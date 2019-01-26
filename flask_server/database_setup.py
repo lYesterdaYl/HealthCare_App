@@ -49,6 +49,16 @@ class Survey_Data(Base):
 
     id = Column(BIGINT, primary_key=True)
     Q1 = Column(Integer)
+    Q2 = Column(Integer)
+    Q3 = Column(Integer)
+    Q4 = Column(Integer)
+    Q5 = Column(Integer)
+    Q6 = Column(Integer)
+    Q7 = Column(Integer)
+    Q8 = Column(Integer)
+    Q9 = Column(Integer)
+    Q10 = Column(Integer)
+    score = Column(Integer)
     date = Column(Date)
 
     user = relationship(User)
