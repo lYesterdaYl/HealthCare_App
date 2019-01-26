@@ -61,7 +61,8 @@ def create_account():
 
         user = session.query(User).filter_by(username=username).first()
         if user is None:
-            new_user = User(username=username, password=password, gender=gender, age=age, telephone=telephone, country=country, state=state, city=city)
+            new_user = User(username=username, password=password, gender=gender, age=age,
+                            telephone=telephone, country=country, state=state, city=city)
             session.add(new_user)
             session.commit()
             response['msg'] = "User Created"
@@ -136,9 +137,11 @@ def get_user_data(user_id):
                 if 'start_date' in request.form and 'end_date' in request.form:
                     start_date, end_date = request.form['start_date'], request.form['end_date']
                     if request.form['data_type'] == 'walk':
-                        data = session.query(Walk_Data).filter_by(user_id=user_id).filter(Walk_Data.date>=start_date, Walk_Data.date<=end_date)
+                        data = session.query(Walk_Data).filter_by(user_id=user_id)\
+                            .filter(Walk_Data.date>=start_date, Walk_Data.date<=end_date)
                     elif request.form['data_type'] == 'calorie':
-                        data = session.query(Calories_Data).filter_by(user_id=user_id).filter(Calories_Data.date>=start_date, Calories_Data.date<=end_date)
+                        data = session.query(Calories_Data).filter_by(user_id=user_id)\
+                            .filter(Calories_Data.date>=start_date, Calories_Data.date<=end_date)
                     else:
                         data = {}
                         response['msg'] = "No Data on such Dates"
@@ -209,8 +212,11 @@ def insert_user_data(user_id):
                 elif request.form['data_type'] == 'calorie':
                     new_data = Calories_Data(calorie=data['walk'], date=data['date'], user_id=user_id)
                 elif request.form['data_type'] == 'survey':
-                    score = data['Q1'] + data['Q2'] + data['Q3'] + data['Q4'] + data['Q5'] + data['Q6'] + data['Q7'] + data['Q8'] + data['Q9'] + data['Q10']
-                    new_data =  Survey_Data(Q1=data['Q1'], Q2=data['Q2'], Q3=data['Q3'], Q4=data['Q4'], Q5=data['Q5'], Q6=data['Q6'], Q7=data['Q7'], Q8=data['Q8'], Q9=data['Q9'], Q10=data['Q10'], score=score, date=data['date'])
+                    score = data['Q1'] + data['Q2'] + data['Q3'] + data['Q4'] + data['Q5'] \
+                            + data['Q6'] + data['Q7'] + data['Q8'] + data['Q9'] + data['Q10']
+                    new_data =  Survey_Data(Q1=data['Q1'], Q2=data['Q2'], Q3=data['Q3'], Q4=data['Q4'], Q5=data['Q5'],
+                                            Q6=data['Q6'], Q7=data['Q7'], Q8=data['Q8'], Q9=data['Q9'], Q10=data['Q10'],
+                                            score=score, date=data['date'])
                 else:
                     response['msg'] = "Please Invalid Data Type"
                     response['code'] = "200"
