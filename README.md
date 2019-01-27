@@ -5,6 +5,9 @@ This Project was created for my CS125 project class. It was built for healthcare
 ## Author
 
 * [Zhiyuan Du](https://github.com/lYesterdaYl)
+* [Yuming Fu](https://github.com/yumi519)
+* [Zhicong Zhong](https://github.com/zhicz)
+* [Yuhan Yao](https://github.com/yyhtudou)
 
 ## Built With
 
