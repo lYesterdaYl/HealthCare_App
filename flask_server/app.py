@@ -35,8 +35,16 @@ def hello_world():
 @app.route('/user/create_account', methods=['POST'])
 def create_account():
     """
-    
-    :return:
+    Create account for users
+    :param username: user name
+    :param password: user password
+    :param gender: user gender(0 for unknown, 1 for male, 2 for female)
+    :param age: user age
+    :param telephone: user telephone number
+    :param country: user country
+    :param state: user state
+    :param city: user city
+    :return:{"msg": "", "code": "200"}
     """
     response = {}
     if request.method == 'POST':
@@ -83,6 +91,8 @@ def create_account():
 def user_login():
     """
     App login function
+    :param username: user name
+    :param password: user password
     :return: {"msg": "auth successful", "data": "", "code": "200"}
     """
 
@@ -173,6 +183,15 @@ def user_change_password():
         return make_response(json.dumps(response), 405)
 @app.route('/data/<int:user_id>/JSON', methods=['POST'])
 def get_user_data(user_id):
+    """
+    Get user data for a specific time period and type
+    :param user_id: user id
+    :param session: session string that acquire from login api
+    :param start_date: request user data starting date
+    :param end_date: request user data ending date
+    :param data_type: "walk" for walk data, "calorie" for calorie data, "survey" for survey data
+    :return:
+    """
     response = {}
     if request.method == 'POST':
         user = session.query(User).filter_by(id=user_id).first()
@@ -186,7 +205,7 @@ def get_user_data(user_id):
                     elif request.form['data_type'] == 'calorie':
                         data = session.query(Calories_Data).filter_by(user_id=user_id)\
                             .filter(Calories_Data.date>=start_date, Calories_Data.date<=end_date)
-                    elif request.form['data_type'] == 'calorie':
+                    elif request.form['data_type'] == 'survey':
                         data = session.query(Survey_Data).filter_by(user_id=user_id)\
                             .filter(Survey_Data.date >= start_date, Survey_Data.date <= end_date)
                     else:
@@ -220,6 +239,18 @@ def get_user_data(user_id):
 
 @app.route('/user/<int:user_id>/update', methods=['POST'])
 def update_user_information(user_id):
+    """
+    Update user information.
+    :param user_id: user id
+    :param session: session string that acquire from login api
+    :param gender: user gender(0 for unknown, 1 for male, 2 for female)
+    :param age: user age
+    :param telephone: user telephone number
+    :param country: user country
+    :param state: user state
+    :param city: user city
+    :return:
+    """
     response = {}
     if request.method == 'POST':
         user = session.query(User).filter_by(id=user_id).first()
@@ -249,6 +280,14 @@ def update_user_information(user_id):
 
 @app.route('/data/<int:user_id>/insert', methods=['POST'])
 def insert_user_data(user_id):
+    """
+    Insert user data for a specific type
+    :param user_id: user id
+    :param session: session string that acquire from login api
+    :param data: a json format to store insert data
+    :param data_type: "walk" for walk data, "calorie" for calorie data, "survey" for survey data
+    :return:
+    """
     response = {}
     if request.method == 'POST':
         user = session.query(User).filter_by(id=user_id).first()
