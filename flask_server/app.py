@@ -35,7 +35,7 @@ def hello_world():
 @app.route('/user/create_account', methods=['POST'])
 def create_account():
     """
-
+    
     :return:
     """
     response = {}
@@ -126,7 +126,51 @@ def user_login():
         response['code'] = "405"
         return make_response(json.dumps(response), 405)
 
+@app.route('/user/change_password', methods=['POST'])
+def user_change_password():
+    """
+    allow user to change their password.
+    :param username: store user name
+    :param password: store user old password
+    :param new_password: store user new password
+    :return: {"msg": "", "code": "200"}
+    """
+    response = {}
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        new_password = request.form['new_password']
+        if password == new_password:
+            response['msg'] = "Please Choose a Different Password"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
+        user = session.query(User).filter_by(username=username).first()
 
+        hash = hashlib.md5()
+        hash.update(password.encode(encoding='utf-8'))
+        if hash.hexdigest() == user.password:
+            if password == new_password:
+                response['msg'] = "Please Choose a Different Password"
+                response['code'] = "200"
+                return make_response(json.dumps(response), 200)
+            else:
+                new_hash = hashlib.md5()
+                new_hash.update(new_password.encode(encoding='utf-8'))
+                user.password = new_hash.hexdigest()
+                session.add(user)
+                session.commit()
+
+                response['msg'] = "Change Password Successful"
+                response['code'] = "200"
+                return make_response(json.dumps(response), 200)
+        else:
+            response['msg'] = "Wrong Username or Original Password"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
+    else:
+        response['msg'] = "Method Not Allowed"
+        response['code'] = "405"
+        return make_response(json.dumps(response), 405)
 @app.route('/data/<int:user_id>/JSON', methods=['POST'])
 def get_user_data(user_id):
     response = {}
@@ -142,13 +186,17 @@ def get_user_data(user_id):
                     elif request.form['data_type'] == 'calorie':
                         data = session.query(Calories_Data).filter_by(user_id=user_id)\
                             .filter(Calories_Data.date>=start_date, Calories_Data.date<=end_date)
+                    elif request.form['data_type'] == 'calorie':
+                        data = session.query(Survey_Data).filter_by(user_id=user_id)\
+                            .filter(Survey_Data.date >= start_date, Survey_Data.date <= end_date)
                     else:
                         data = {}
                         response['msg'] = "No Data on such Dates"
                         response['data'] = data
                         response['code'] = "200"
                         return make_response(json.dumps(response), 200)
-                    response['msg'] = "Data Retrive Successful"
+                    response['msg'] = "User Information " + str(request.form['data_type']).capitalize() \
+                                      +" Data Insert Successful"
                     response['data'] = data
                     response['code'] = "200"
                     return make_response(json.dumps(response), 200)
@@ -223,6 +271,9 @@ def insert_user_data(user_id):
                     return make_response(json.dumps(response), 200)
                 session.add(new_data)
                 session.commit()
+                response['msg'] = "User Information " + str(request.form['data_type']).capitalize() +" Data Insert Successful"
+                response['code'] = "200"
+                return make_response(json.dumps(response), 200)
             else:
                 response['msg'] = "Please Specify Data Type"
                 response['code'] = "200"
