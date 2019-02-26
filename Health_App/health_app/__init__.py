@@ -13,7 +13,7 @@ app = Flask(__name__)
 DIALCT = "mysql"
 DRIVER = "pymysql"
 USERNAME = "root"
-PASSWORD = ""
+PASSWORD = "root"
 HOST = "127.0.0.1"
 PORT = "3306"
 DATABASE = "healthcare_app"
@@ -29,6 +29,7 @@ session = DBSession()
 
 @app.route('/')
 def hello_world():
+
     return 'Hello World!'
 
 
