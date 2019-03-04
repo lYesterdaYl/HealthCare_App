@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, make_response, render_template
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User, Walk_Data, Calories_Data, Survey_Data
+from database_setup import Base, User, Walk_Data, Calories_Data, Survey_Data, Music_Data, Video_Data
 
 import json
 import hashlib
@@ -29,8 +29,13 @@ session = DBSession()
 
 @app.route('/')
 def hello_world():
+    s = ""
+    s += "Available API Address<br>"
+    for rule in app.url_map.iter_rules():
+        print(type(rule))
+        s += str(rule) + "<br>"
 
-    return 'Hello World!'
+    return s
 
 
 @app.route('/user/create_account', methods=['POST'])
@@ -53,6 +58,10 @@ def create_account():
         password = request.form.get("password", "")
         gender = request.form.get("gender", "0")
         age = request.form.get("age", "")
+        major = request.form.get("major", "")
+        prefer = request.form.get("prefer", "")
+        weight = request.form.get("weight", "")
+        target_weight = request.form.get("target_weight", "")
         telephone = request.form.get("telephone", "")
         country = request.form.get("country", "")
         state = request.form.get("state", "")
@@ -70,8 +79,9 @@ def create_account():
 
         user = session.query(User).filter_by(username=username).first()
         if user is None:
-            new_user = User(username=username, password=password, gender=gender, age=age,
-                            telephone=telephone, country=country, state=state, city=city)
+            new_user = User(username=username, password=password, gender=gender, age=age, major=major, prefer=prefer,
+                            weight=weight, target_weight=target_weight, telephone=telephone, country=country,
+                            state=state, city=city)
             session.add(new_user)
             session.commit()
             response['msg'] = "User Created"
@@ -117,6 +127,10 @@ def user_login():
             data['username'] = user.username
             data['gender'] = user.gender
             data['age'] = user.age
+            data['major'] = user.major
+            data['prefer'] = user.prefer
+            data['weight'] = user.weight
+            data['target_weight'] = user.target_weight
             data['telephone'] = user.telephone
             data['country'] = user.country
             data['state'] = user.state
@@ -182,6 +196,8 @@ def user_change_password():
         response['msg'] = "Method Not Allowed"
         response['code'] = "405"
         return make_response(json.dumps(response), 405)
+
+
 @app.route('/data/<int:user_id>/JSON', methods=['POST'])
 def get_user_data(user_id):
     """
@@ -208,6 +224,12 @@ def get_user_data(user_id):
                             .filter(Calories_Data.date>=start_date, Calories_Data.date<=end_date)
                     elif request.form['data_type'] == 'survey':
                         data = session.query(Survey_Data).filter_by(user_id=user_id)\
+                            .filter(Survey_Data.date >= start_date, Survey_Data.date <= end_date)
+                    elif request.form['data_type'] == 'music':
+                        data = session.query(Music_Data).filter_by(user_id=user_id)\
+                            .filter(Survey_Data.date >= start_date, Survey_Data.date <= end_date)
+                    elif request.form['data_type'] == 'video':
+                        data = session.query(Video_Data).filter_by(user_id=user_id)\
                             .filter(Survey_Data.date >= start_date, Survey_Data.date <= end_date)
                     else:
                         data = {}
@@ -258,6 +280,10 @@ def update_user_information(user_id):
         if user.session == request.form['session']:
             user.gender = request.form.get("gender", user.gender)
             user.age = request.form.get("age", user.age)
+            user.major = request.form.get("major", user.major)
+            user.prefer = request.form.get("prefer", user.prefer)
+            user.weight = request.form.get("age", user.weight)
+            user.target_weight = request.form.get("age", user.target_weight)
             user.telephone = request.form.get("telephone", user.telephone)
             user.country = request.form.get("country", user.country)
             user.state = request.form.get("state", user.state)
@@ -300,11 +326,11 @@ def insert_user_data(user_id):
                 elif request.form['data_type'] == 'calorie':
                     new_data = Calories_Data(calorie=data['walk'], date=data['date'], user_id=user_id)
                 elif request.form['data_type'] == 'survey':
-                    score = data['Q1'] + data['Q2'] + data['Q3'] + data['Q4'] + data['Q5'] \
-                            + data['Q6'] + data['Q7'] + data['Q8'] + data['Q9'] + data['Q10']
-                    new_data =  Survey_Data(Q1=data['Q1'], Q2=data['Q2'], Q3=data['Q3'], Q4=data['Q4'], Q5=data['Q5'],
-                                            Q6=data['Q6'], Q7=data['Q7'], Q8=data['Q8'], Q9=data['Q9'], Q10=data['Q10'],
-                                            score=score, date=data['date'])
+                    new_data =  Survey_Data(score=data['score'], date=data['date'], user_id=data['user_id'])
+                elif request.form['data_type'] == 'music':
+                    new_data =  Music_Data(score=data['score'], date=data['date'], music_id=data['music_id'], user_id=data['user_id'])
+                elif request.form['data_type'] == 'video':
+                    new_data =  Video_Data(score=data['score'], date=data['date'], video_id=data['video_id'], user_id=data['user_id'])
                 else:
                     response['msg'] = "Please Invalid Data Type"
                     response['code'] = "200"
