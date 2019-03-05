@@ -32,6 +32,7 @@ class Music(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(50), nullable=False)
     link = Column(Text)
+    category = Column(Integer)
     insert_time = Column(TIMESTAMP(True), nullable=False)
 
 
@@ -41,6 +42,7 @@ class Video(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(50), nullable=False)
     link = Column(Text)
+    category = Column(Integer)
     insert_time = Column(TIMESTAMP(True), nullable=False)
 
 
@@ -101,7 +103,7 @@ class Video_Data(Base):
     score = Column(Integer)
     date = Column(Date)
 
-    video = relationship(Music)
+    video = relationship(Video)
     video_id = Column(Integer, ForeignKey('video.id'))
     user = relationship(User)
     user_id = Column(Integer, ForeignKey('user.id'))
