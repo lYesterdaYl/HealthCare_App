@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, make_response, render_template
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base, User, Walk_Data, Calories_Data, Survey_Data, Music_Data, Video_Data
+from database_setup import Base, User, Walk_Data, Calories_Data, Survey_Data, Music_Data, Video_Data, Music, Video
 
 import json
 import hashlib
@@ -57,11 +57,11 @@ def create_account():
         username = request.form.get("username", "")
         password = request.form.get("password", "")
         gender = request.form.get("gender", "0")
-        age = request.form.get("age", "")
+        age = request.form.get("age", 0)
         major = request.form.get("major", "")
         prefer = request.form.get("prefer", "")
-        weight = request.form.get("weight", "")
-        target_weight = request.form.get("target_weight", "")
+        weight = request.form.get("weight", 0)
+        target_weight = request.form.get("target_weight", 0)
         telephone = request.form.get("telephone", "")
         country = request.form.get("country", "")
         state = request.form.get("state", "")
@@ -352,6 +352,36 @@ def insert_user_data(user_id):
         response['msg'] = "Method Not Allowed"
         response['code'] = "405"
         return make_response(json.dumps(response), 405)
+
+@app.route('/test', methods=['GET'])
+def test():
+    n = 0
+    m = 0
+    for i in range(1,100000):
+        if i % 100 == 0:
+            n += 1
+        music = Music(title=str(i), link=str(i),category=n)
+        session.add(music)
+    session.commit()
+
+    for i in range(1, 100000):
+        if i % 200 == 0:
+            m += 1
+        music_data = Music_Data(score=m, music_id=i, user_id=1)
+        session.add(music_data)
+    session.commit()
+    return "finished"
+
+@app.route('/test2', methods=['GET'])
+def test2():
+    music_data = session.query(Music.id, Music_Data.music_id).filter(Music.id == Music_Data.music_id).filter(Music_Data.score>=0).filter(Music.category==1)
+    print(str(music_data))
+    result = ""
+    for item in music_data:
+        result += str(item.id) + "<br>"
+
+    return result
+
 
 
 if __name__ == '__main__':
