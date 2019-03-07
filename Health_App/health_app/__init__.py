@@ -115,7 +115,11 @@ def user_login():
 
         hash = hashlib.md5()
         hash.update(password.encode(encoding='utf-8'))
-        if hash.hexdigest() == user.password:
+        if user is None or hash.hexdigest() != user.password:
+            response['msg'] = "Wrong username or password"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
+        elif hash.hexdigest() == user.password:
             now = int(time.time())
             session_code = str(now) + str(random.randint(10000, 99999))
             user.session = session_code
@@ -143,9 +147,10 @@ def user_login():
             response['code'] = "200"
             return make_response(json.dumps(response), 200)
         else:
-            response['msg'] = "Wrong username or password"
+            response['msg'] = "Unknown Error"
             response['code'] = "200"
             return make_response(json.dumps(response), 200)
+
     else:
         response['msg'] = "Method Not Allowed"
         response['code'] = "405"
