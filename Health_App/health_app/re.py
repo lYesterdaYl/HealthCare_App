@@ -2,15 +2,37 @@ from estimation import estimation
 from cf import collaborative_filtering
 
 class recommendation:
-    def __init__(self,user_id,user_dict,item_dict):
+    def __init__(self,user_id,user_dict):
+        '''
+        user_id: int
+        user_dict: dict = {"prefer":"music"/"video"/"",
+                            "score":int(1 or 2 or 3 or 4)
+                            "average_score":float(in the range of [1,4])}
+        '''
         self.user_dict = user_dict
-        self.item_dict = item_dict
+        self.item_dict = None
         self.user_id = user_id
+        self.prefer = None
 
-    def recommend(self):
+    def estimate(self):
+        """
+        returns the health state of user("A"/"B","C","D")
+        """
         estimator = estimation(self.user_dict)
         state,prefer = estimator.estimate()
-        ratings_dict = self.item_dict[state][prefer]
+        self.prefer = prefer
+        return state
+
+    def recommend(self,item_dict):
+        """
+        Input:
+            item_dict = {"music":{music_id:{user_id:rating(int,1-5)}},
+                         "video":{video_id:{user_id:rating(int,1-5)}}}
+        Output:
+            returns the item_id(either music_id or video_id)
+        """
+        self.item_dict = item_dict
+        ratings_dict = self.item_dict[self.prefer]
         users,items,ratings = self.parse_ratings_dict(ratings_dict)
         user_index = self.get_user_index(self.user_id,users)
         item_index = collaborative_filtering(ratings).recommend_item(user_index)
