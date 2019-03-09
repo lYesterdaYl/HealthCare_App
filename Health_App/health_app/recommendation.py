@@ -35,16 +35,17 @@ class recommendation:
         ratings_dict = self.item_dict[self.prefer]
         users,items,ratings = self.parse_ratings_dict(ratings_dict)
         user_index = self.get_user_index(self.user_id,users)
-        item_index = collaborative_filtering(ratings).recommend_item(user_index)
+        model = collaborative_filtering(ratings)
+        item_index = model.recommend_item(user_index)
         item_id = items[item_index]
-        return item_id
+        return {self.prefer:item_id}
 
     def get_user_index(self,userid,users):
         result = 0
         for i in range(len(users)):
             if users[i] == userid:
                 result = i
-                return result
+        return result
 
     def parse_ratings_dict(self,ratings_dict):
         users = []
@@ -72,4 +73,3 @@ class recommendation:
             for user in ratings_dict[item]:
                 ratings[user_dict[user]][item_dict[item]] = ratings_dict[item][user]
         return (users,items,ratings)
-
