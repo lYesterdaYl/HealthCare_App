@@ -12,10 +12,10 @@ class estimation:
             prefer = "music" if random.random()>0.5 else "video"
         result = 0.3*average+0.7*score
         if result<=1.5:
-            return ("A",prefer)
+            return ("1",prefer)
         elif result<=2.5:
-            return ("B",prefer)
+            return ("2",prefer)
         elif result<=3.5:
-            return ("C",prefer)
+            return ("3",prefer)
         else:
-            return ("D",prefer)
+            return ("4",prefer)
