@@ -38,8 +38,7 @@ class recommendation:
         model = collaborative_filtering(ratings)
         item_index = model.recommend_item(user_index)
         item_id = items[item_index]
-        return {self.prefer:item_id}
-
+        return item_id
     def get_user_index(self,userid,users):
         result = 0
         for i in range(len(users)):
