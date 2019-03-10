@@ -30,7 +30,7 @@ class Music(Base):
     __tablename__ = 'music'
 
     id = Column(Integer, primary_key=True)
-    title = Column(String(50), nullable=False)
+    title = Column(String(100), nullable=False)
     link = Column(Text)
     category = Column(Integer)
     insert_time = Column(TIMESTAMP(True), nullable=False)
@@ -40,7 +40,7 @@ class Video(Base):
     __tablename__ = 'video'
 
     id = Column(Integer, primary_key=True)
-    title = Column(String(50), nullable=False)
+    title = Column(String(100), nullable=False)
     link = Column(Text)
     category = Column(Integer)
     insert_time = Column(TIMESTAMP(True), nullable=False)
