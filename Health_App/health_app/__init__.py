@@ -246,7 +246,7 @@ def get_user_data(user_id):
                         return make_response(json.dumps(response), 200)
                     response['msg'] = "User Information " + str(request.form['data_type']).capitalize() \
                                       +" Data Get Successful"
-                    response['data'] = data
+                    response['data'] = [i.serialize for i in data]
                     response['code'] = "200"
                     return make_response(json.dumps(response), 200)
                 else:
