@@ -6,22 +6,12 @@ from database_setup import Base, User, Walk_Data, Calories_Data, Survey_Data, Mu
 import json
 import hashlib
 import time, random
-
+import setting
 import recommendation
 
 app = Flask(__name__)
 
-# MySQL database information
-DIALCT = "mysql"
-DRIVER = "pymysql"
-USERNAME = "root"
-PASSWORD = "root"
-HOST = "127.0.0.1"
-PORT = "3306"
-DATABASE = "healthcare_app"
-DB_URI = "{}+{}://{}:{}@{}:{}/{}?charset=utf8"\
-    .format(DIALCT, DRIVER, USERNAME, PASSWORD, HOST, PORT, DATABASE)
-engine = create_engine(DB_URI)
+engine = create_engine(setting.DB_URI)
 
 Base.metadata.bind = engine
 
@@ -325,6 +315,14 @@ def insert_user_data(user_id):
     response = {}
     if request.method == 'POST':
         user = session.query(User).filter_by(id=user_id).first()
+
+        test = request.form.get("test", "")
+        if test == "test":
+            response = {}
+            response['form_session'] = request.form['session']
+            response['user_session'] = user.session
+            response['sql'] = str(user)
+            return json.dumps(response)
         if user.session == request.form['session']:
             if 'data_type' in request.form:
                 data = json.loads(request.form['data'])
@@ -333,11 +331,11 @@ def insert_user_data(user_id):
                 elif request.form['data_type'] == 'calorie':
                     new_data = Calories_Data(calorie=data['walk'], date=data['date'], user_id=user_id)
                 elif request.form['data_type'] == 'survey':
-                    new_data =  Survey_Data(score=data['score'], date=data['date'], user_id=data['user_id'])
+                    new_data =  Survey_Data(score=data['score'], date=data['date'], user_id=user_id)
                 elif request.form['data_type'] == 'music':
-                    new_data =  Music_Data(score=data['score'], date=data['date'], music_id=data['music_id'], user_id=data['user_id'])
+                    new_data =  Music_Data(score=data['score'], date=data['date'], music_id=data['music_id'], user_id=user_id)
                 elif request.form['data_type'] == 'video':
-                    new_data =  Video_Data(score=data['score'], date=data['date'], video_id=data['video_id'], user_id=data['user_id'])
+                    new_data =  Video_Data(score=data['score'], date=data['date'], video_id=data['video_id'], user_id=user_id)
                 else:
                     data = {}
                     response['msg'] = "No Data on such Types"

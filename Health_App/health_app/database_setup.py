@@ -2,6 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String, TIMESTAMP, BIGINT, F
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+import setting
 
 Base = declarative_base()
 
@@ -189,15 +190,6 @@ class Video_Data(Base):
         }
 
 
-DIALCT = "mysql"
-DRIVER = "pymysql"
-USERNAME = "root"
-PASSWORD = "root"
-HOST = "127.0.0.1"
-PORT = "3306"
-DATABASE = "healthcare_app"
-DB_URI = "{}+{}://{}:{}@{}:{}/{}?charset=utf8"\
-    .format(DIALCT, DRIVER, USERNAME, PASSWORD, HOST, PORT, DATABASE)
-engine = create_engine(DB_URI)
+engine = create_engine(setting.DB_URI)
 
 Base.metadata.create_all(engine)
