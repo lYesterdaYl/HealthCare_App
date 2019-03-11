@@ -96,7 +96,7 @@ class Walk_Data(Base):
         return {
             'id': self.id,
             'walk': self.walk,
-            'date': self.date,
+            'date': str(self.date),
             'user_id': self.user_id
         }
 
@@ -116,7 +116,7 @@ class Calories_Data(Base):
         return {
             'id': self.id,
             'calorie': self.calorie,
-            'date': self.date,
+            'date': str(self.date),
             'user_id': self.user_id
         }
 
@@ -137,7 +137,7 @@ class Survey_Data(Base):
         return {
             'id': self.id,
             'score': self.score,
-            'date': self.date,
+            'date': str(self.date),
             'user_id': self.user_id
         }
 
@@ -160,7 +160,7 @@ class Music_Data(Base):
         return {
             'id': self.id,
             'score': self.score,
-            'date': self.date,
+            'date': str(self.date),
             'music_id': self.music_id,
             'user_id': self.user_id
         }
