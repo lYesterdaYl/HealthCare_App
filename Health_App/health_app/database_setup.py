@@ -25,6 +25,23 @@ class User(Base):
     session = Column(String(20))
     insert_time = Column(TIMESTAMP(True), nullable=False)
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'gender': self.gender,
+            'age': self.age,
+            'major': self.major,
+            'prefer': self.prefer,
+            'weight': self.weight,
+            'target_weight': self.target_weight,
+            'telephone': self.telephone,
+            'country': self.country,
+            'state': self.state,
+            'city': self.city,
+            'session': self.session
+        }
+
 
 class Music(Base):
     __tablename__ = 'music'
@@ -34,6 +51,15 @@ class Music(Base):
     link = Column(Text)
     category = Column(Integer)
     insert_time = Column(TIMESTAMP(True), nullable=False)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'link': self.link,
+            'category': self.category
+        }
 
 
 class Video(Base):
@@ -45,6 +71,14 @@ class Video(Base):
     category = Column(Integer)
     insert_time = Column(TIMESTAMP(True), nullable=False)
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'link': self.link,
+            'category': self.category
+        }
 
 class Walk_Data(Base):
     __tablename__ = 'user_walk_data'
@@ -57,6 +91,14 @@ class Walk_Data(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     insert_time = Column(TIMESTAMP(True), nullable=False)
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'walk': self.walk,
+            'date': self.date,
+            'user_id': self.user_id
+        }
 
 class Calories_Data(Base):
     __tablename__ = 'user_calorie_data'
@@ -69,6 +111,15 @@ class Calories_Data(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     insert_time = Column(TIMESTAMP(True), nullable=False)
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'calorie': self.calorie,
+            'date': self.date,
+            'user_id': self.user_id
+        }
+
 
 class Survey_Data(Base):
     __tablename__ = 'user_survey_data'
@@ -80,6 +131,15 @@ class Survey_Data(Base):
     user = relationship(User)
     user_id = Column(Integer, ForeignKey('user.id'))
     insert_time = Column(TIMESTAMP(True), nullable=False)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'score': self.score,
+            'date': self.date,
+            'user_id': self.user_id
+        }
 
 
 class Music_Data(Base):
@@ -95,6 +155,15 @@ class Music_Data(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     insert_time = Column(TIMESTAMP(True), nullable=False)
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'score': self.score,
+            'date': self.date,
+            'music_id': self.music_id,
+            'user_id': self.user_id
+        }
 
 class Video_Data(Base):
     __tablename__ = 'user_video_data'
@@ -108,6 +177,16 @@ class Video_Data(Base):
     user = relationship(User)
     user_id = Column(Integer, ForeignKey('user.id'))
     insert_time = Column(TIMESTAMP(True), nullable=False)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'score': self.score,
+            'date': self.date,
+            'video_id': self.video_id,
+            'user_id': self.user_id
+        }
 
 
 DIALCT = "mysql"
