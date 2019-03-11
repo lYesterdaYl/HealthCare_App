@@ -366,7 +366,8 @@ def insert_user_data(user_id):
 @app.route('/user/<int:user_id>/recomendation', methods=['GET'])
 def recomendation(user_id):
     response = {}
-    survey_data = session.query(func.avg(Survey_Data.score).label('average')).filter(Survey_Data.user_id==user_id).filter(Survey_Data.date>"2019-1-1").filter(Survey_Data.date<"2019-12-31").scalar()
+    # survey_data = session.query(func.avg(Survey_Data.score).label('average')).filter(Survey_Data.user_id==user_id).filter(Survey_Data.date>"2019-1-1").filter(Survey_Data.date<"2019-12-31").scalar()
+    survey_data = session.query(func.avg(Survey_Data.score).label('average')).filter(Survey_Data.user_id==user_id).scalar()
     today_survey_data = session.query(Survey_Data.score).filter(Survey_Data.user_id==user_id).filter(Survey_Data.date==time.strftime('%Y-%m-%d')).scalar()
     user_data = session.query(User.prefer).filter(User.id==user_id).first()
 
@@ -457,10 +458,11 @@ def test2():
 
 @app.route('/generate_fake_survey_data', methods=['GET'])
 def generate_fake_survey_data():
-    for i in range(1, 12+1):
-        for j in range(1, 30+1):
-            survey_data = Survey_Data(score=random.randint(1,4),date="2019-" + str(i) + "-" + str(j), user_id=2)
-            session.add(survey_data)
+    for u in range(1,100+1):
+        for i in range(1, 12+1):
+            for j in range(1, 30+1):
+                survey_data = Survey_Data(score=random.randint(1,4),date="2019-" + str(i) + "-" + str(j), user_id=u)
+                session.add(survey_data)
     session.commit()
     return make_response("OK!", 200)
 
