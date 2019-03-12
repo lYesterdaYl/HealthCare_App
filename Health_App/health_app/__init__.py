@@ -361,68 +361,84 @@ def insert_user_data(user_id):
         return make_response(json.dumps(response), 405)
 
 
-@app.route('/user/<int:user_id>/recomendation', methods=['GET'])
+@app.route('/user/<int:user_id>/recomendation', methods=['POST'])
 def recomendation(user_id):
     response = {}
-    # survey_data = session.query(func.avg(Survey_Data.score).label('average')).filter(Survey_Data.user_id==user_id).filter(Survey_Data.date>"2019-1-1").filter(Survey_Data.date<"2019-12-31").scalar()
-    survey_data = session.query(func.avg(Survey_Data.score).label('average')).filter(Survey_Data.user_id==user_id).scalar()
-    today_survey_data = session.query(Survey_Data.score).filter(Survey_Data.user_id==user_id).filter(Survey_Data.date==time.strftime('%Y-%m-%d')).scalar()
-    user_data = session.query(User.prefer).filter(User.id==user_id).first()
 
-    if user_data is not None:
-        prefer = user_data[0]
-    else:
-        prefer = ""
-    if survey_data is None or today_survey_data is None:
-        response['msg'] = "User has No Survey Data"
-        response['code'] = "200"
-        return make_response(json.dumps(response), 200)
-    average_score = float(survey_data)
-    score = float(today_survey_data)
+    if request.method == 'POST':
+        user = session.query(User).filter_by(id=user_id).first()
 
-    user_dict = {}
-    user_dict['prefer'] = prefer
-    user_dict['average_score'] = average_score
-    user_dict['score'] = score
+        if user.session == request.form['session']:
 
-    recom = recommendation.recommendation(user_id, user_dict)
-    category = recom.estimate()
+            # survey_data = session.query(func.avg(Survey_Data.score).label('average')).filter(Survey_Data.user_id==user_id).filter(Survey_Data.date>"2019-1-1").filter(Survey_Data.date<"2019-12-31").scalar()
+            survey_data = session.query(func.avg(Survey_Data.score).label('average')).filter(Survey_Data.user_id==user_id).scalar()
+            today_survey_data = session.query(Survey_Data.score).filter(Survey_Data.user_id==user_id).filter(Survey_Data.date==time.strftime('%Y-%m-%d')).scalar()
+            user_data = session.query(User.prefer).filter(User.id==user_id).first()
 
-    item_dict = {"music":{}, "video":{}}
-    music_data = session.query(Music.id, Music_Data.music_id, Music_Data.user_id, Music_Data.score).filter(Music.id == Music_Data.music_id).filter(Music.category==category)
-    video_data = session.query(Video.id, Music_Data.music_id, Video_Data.user_id, Video_Data.score).filter(Video.id == Video_Data.video_id).filter(Video.category==category)
+            if user_data is not None:
+                prefer = user_data[0]
+            else:
+                prefer = ""
+            if survey_data is None or today_survey_data is None:
+                response['msg'] = "User has No Survey Data"
+                response['code'] = "200"
+                return make_response(json.dumps(response), 200)
+            average_score = float(survey_data)
+            score = float(today_survey_data)
 
-    for md in music_data:
-        if md.id not in item_dict['music']:
-            item_dict['music'][md.id] = {md.user_id: md.score}
+            user_dict = {}
+            user_dict['prefer'] = prefer
+            user_dict['average_score'] = average_score
+            user_dict['score'] = score
+
+            recom = recommendation.recommendation(user_id, user_dict)
+            category = recom.estimate()
+
+            item_dict = {"music":{}, "video":{}}
+            music_data = session.query(Music.id, Music_Data.music_id, Music_Data.user_id, Music_Data.score).filter(Music.id == Music_Data.music_id).filter(Music.category==category)
+            video_data = session.query(Video.id, Music_Data.music_id, Video_Data.user_id, Video_Data.score).filter(Video.id == Video_Data.video_id).filter(Video.category==category)
+
+            for md in music_data:
+                if md.id not in item_dict['music']:
+                    item_dict['music'][md.id] = {md.user_id: md.score}
+                else:
+                    item_dict['music'][md.id][md.user_id] = md.score
+
+            for vd in video_data:
+                if vd.id not in item_dict['video']:
+                    item_dict['video'][vd.id] = {vd.user_id: vd.score}
+                else:
+                    item_dict['video'][vd.id][vd.user_id] = vd.score
+
+            result = recom.recommend(item_dict)
+
+            if result[0] == 'music':
+                recomend_data = session.query(Music).filter_by(id=result[1]).first()
+            elif result[0] == 'video':
+                recomend_data = session.query(Video).filter_by(id=result[1]).first()
+            else:
+                response['msg'] = "No Recomendation Type"
+                response['code'] = "200"
+                return make_response(json.dumps(response), 200)
+
+            data = {}
+            data['title'] = recomend_data.title
+            data['link'] = recomend_data.link
+            data['id'] = recomend_data.id
+            data['type'] = result[0]
+
+            response['msg'] = "Recomendation Successful"
+            response['data'] = data
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
         else:
-            item_dict['music'][md.id][md.user_id] = md.score
-
-    for vd in video_data:
-        if vd.id not in item_dict['video']:
-            item_dict['video'][vd.id] = {vd.user_id: vd.score}
-        else:
-            item_dict['video'][vd.id][vd.user_id] = vd.score
-
-    result = recom.recommend(item_dict)
-
-    if result[0] == 'music':
-        recomend_data = session.query(Music).filter_by(id=result[1]).first()
-    elif result[0] == 'video':
-        recomend_data = session.query(Video).filter_by(id=result[1]).first()
+            response['msg'] = "Please Login or Re-Login"
+            response['code'] = "200"
+            return make_response(json.dumps(response), 200)
     else:
-        response['msg'] = "No Recomendation Type"
-        response['code'] = "200"
-        return make_response(json.dumps(response), 200)
-
-    data = {}
-    data['title'] = recomend_data.title
-    data['link'] = recomend_data.link
-
-    response['msg'] = "Recomendation Successful"
-    response['data'] = data
-    response['code'] = "200"
-    return make_response(json.dumps(response), 200)
+        response['msg'] = "Method Not Allowed"
+        response['code'] = "405"
+        return make_response(json.dumps(response), 405)
 
 
 @app.route('/test', methods=['GET'])
