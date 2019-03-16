@@ -331,15 +331,18 @@ def insert_user_data(user_id):
                 elif request.form['data_type'] == 'calorie':
                     new_data = Calories_Data(calorie=data['walk'], date=data['date'], user_id=user_id)
                 elif request.form['data_type'] == 'survey':
+                    today = session.query(Survey_Data).filter_by(user_id=user_id,date=data['date']).first()
+                    if today is not None:
+                        response['msg'] = "This User already took survey today"
+                        response['code'] = "200"
+                        return make_response(json.dumps(response), 200)
                     new_data =  Survey_Data(score=data['score'], date=data['date'], user_id=user_id)
                 elif request.form['data_type'] == 'music':
                     new_data =  Music_Data(score=data['score'], date=data['date'], music_id=data['music_id'], user_id=user_id)
                 elif request.form['data_type'] == 'video':
                     new_data =  Video_Data(score=data['score'], date=data['date'], video_id=data['video_id'], user_id=user_id)
                 else:
-                    data = {}
                     response['msg'] = "No Data on such Types"
-                    response['data'] = data
                     response['code'] = "200"
                     return make_response(json.dumps(response), 200)
                 session.add(new_data)
