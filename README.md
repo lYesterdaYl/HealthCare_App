@@ -15,7 +15,9 @@ This Project was created for my CS125 project class. It was built for healthcare
 * [Flask](http://flask.pocoo.org/) - Used to construct server side code.
 
 ## How it works(Database)
-
+* Comments inside the source code
+* Stores data and process data through recommendation
+* Communicate with UI
 ## How it works(Recommendation System)
 * First of all, the recommendation system filter the items with a context filter and a personal filter. The context filter matches the health state of user with items that are indexed in the database. The personal filter removes the items that are not in the category of user interest.
 * Secondly, the recommendation engine construct a user-item ratings matrix, decomposite it into the user embedding matrix and item embedding matrix. We define the loss function as mean square loss of ground truth rating and predicted rating, and optimize our model by stochastic gradient descent. This machine learning model is called collaborative filtering.
