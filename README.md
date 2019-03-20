@@ -17,6 +17,9 @@ This Project was created for my CS125 project class. It was built for healthcare
 ## How it works(Database)
 
 ## How it works(Recommendation System)
+* First of all, the recommendation system filter the items with a context filter and a personal filter. The context filter matches the health state of user with items that are indexed in the database. The personal filter removes the items that are not in the category of user interest.
+* Secondly, the recommendation engine construct a user-item ratings matrix, decomposite it into the user embedding matrix and item embedding matrix. We define the loss function as mean square loss of ground truth rating and predicted rating, and optimize our model by stochastic gradient descent. This machine learning model is called collaborative filtering.
+* Finally, we predict the rating of all item given our user, rank the item based on predicted rating scores, and recommend the best rated one to user.
 
 ## How it works(Android Java UI)
 * User begin with sign in activity, able to sign up or sign in
