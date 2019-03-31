@@ -1,6 +1,8 @@
 from flask import Flask, request, make_response
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
+from flask_sqlalchemy import SQLAlchemy
+
 from database_setup import Base, User, Walk_Data, Calories_Data, Survey_Data, Music_Data, Video_Data, Music, Video
 
 import json
@@ -11,12 +13,21 @@ import recommendation
 
 app = Flask(__name__)
 
-engine = create_engine(setting.DB_URI)
+APPLICATION_NAME = "Health Care App"
+app.config['SQLALCHEMY_DATABASE_URI'] = setting.DB_URI
+app.config['SQLALCHEMY_POOL_SIZE'] = 100
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 3600
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-Base.metadata.bind = engine
+db = SQLAlchemy(app)
+session = db.session
 
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+# engine = create_engine(setting.DB_URI)
+#
+# Base.metadata.bind = engine
+#
+# DBSession = sessionmaker(bind=engine)
+# session = DBSession()
 
 
 @app.route('/')
@@ -24,7 +35,6 @@ def hello_world():
     s = ""
     s += "Available API Address<br>"
     for rule in app.url_map.iter_rules():
-        print(type(rule))
         s += str(rule) + "<br>"
 
     return s
